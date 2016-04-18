@@ -48,7 +48,7 @@ mysql_init() {
     mysql_wait $protected/mysql.sock || \
 	die "MySQL didn't start, can't continue"
 
-    echo "Sanitize privilegdes"
+    echo "Sanitize privileges"
     /usr/bin/mysql --socket=$protected/mysql.sock <<EOSQL
 	DELETE FROM mysql.user ;
 	CREATE USER 'root'@'%' IDENTIFIED BY '${rootpw}' ;
@@ -63,6 +63,14 @@ user = root
 password = ${rootpw}
 EOF
     chmod 600 /root/.my.cnf
+
+    for f in /etc/mysql.d/*; do
+	case "$f" in 
+	    *.sql)   echo "running $f"
+	             /usr/bin/mysql --socket=$protected/mysql.sock < $f ;;
+	    *)       echo "ignoring $f" ;;
+	esac
+    done
 
     echo "Shuting down protected MySQL"
     kill "$(cat $protected/mysqld.pid)"

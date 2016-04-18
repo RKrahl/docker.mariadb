@@ -51,8 +51,9 @@ mysql_init() {
     echo "Sanitize privileges"
     /usr/bin/mysql --socket=$protected/mysql.sock <<EOSQL
 	DELETE FROM mysql.user ;
-	CREATE USER 'root'@'%' IDENTIFIED BY '${rootpw}' ;
-	GRANT ALL ON *.* TO 'root'@'%' WITH GRANT OPTION ;
+	FLUSH PRIVILEGES ;
+	CREATE USER 'root'@'localhost' IDENTIFIED BY '${rootpw}' ;
+	GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
 	DROP DATABASE IF EXISTS test ;
 	FLUSH PRIVILEGES ;
 EOSQL

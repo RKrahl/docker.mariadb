@@ -1,9 +1,7 @@
 FROM rkrahl/opensuse
 
 RUN zypper --non-interactive install \
-	mariadb \
-	pwgen \
-	timezone
+	mariadb
 
 RUN mkdir -p /etc/mysql /etc/mysql.d
 COPY start-mysql.sh /etc/mysql

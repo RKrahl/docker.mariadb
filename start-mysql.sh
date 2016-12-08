@@ -1,7 +1,7 @@
 #!/bin/bash
 
 datadir=/var/lib/mysql
-mysqld=/usr/sbin/mysqld
+mysqld=/usr/libexec/mysqld
 
 die() {
     echo "$1"
@@ -51,10 +51,9 @@ mysql_init() {
 
     echo "Sanitize privileges"
     /usr/bin/mysql --socket=$protected/mysql.sock <<EOSQL
-	DELETE FROM mysql.user ;
-	FLUSH PRIVILEGES ;
-	CREATE USER 'root'@'localhost' IDENTIFIED BY '${rootpw}' ;
-	GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
+	DELETE FROM mysql.user WHERE User != 'root' ;
+	DELETE FROM mysql.user WHERE Host != 'localhost' ;
+	SET PASSWORD FOR 'root'@'localhost' = PASSWORD('${rootpw}') ;
 	DROP DATABASE IF EXISTS test ;
 	DELETE FROM mysql.db ;
 	FLUSH PRIVILEGES ;
@@ -87,9 +86,6 @@ EOF
     echo "Final cleanup"
     rm -rf $protected
 }
-
-mkdir -p /var/run/mysql
-chown --no-dereference mysql:mysql /var/run/mysql
 
 if [[ ! -d $datadir/mysql ]]; then
     mysql_init

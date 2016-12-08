@@ -1,7 +1,7 @@
-FROM rkrahl/opensuse
+FROM rkrahl/centos:7
 
-RUN zypper --non-interactive install \
-	mariadb
+RUN yum -y install \
+    mariadb-server
 
 RUN mkdir -p /etc/mysql /etc/mysql.d
 COPY start-mysql.sh /etc/mysql

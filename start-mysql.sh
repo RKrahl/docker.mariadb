@@ -1,6 +1,7 @@
 #!/bin/bash
 
 datadir=/var/lib/mysql
+mysqld=/usr/sbin/mysqld
 
 die() {
     echo "$1"
@@ -37,7 +38,7 @@ mysql_init() {
 	die "Failed to set group/user to '$protected'"
 
     echo "Running protected MySQL... "
-    /usr/sbin/mysqld \
+    $mysqld \
 	--defaults-file=/etc/my.cnf \
 	--user=mysql \
 	--skip-networking \
@@ -55,6 +56,7 @@ mysql_init() {
 	CREATE USER 'root'@'localhost' IDENTIFIED BY '${rootpw}' ;
 	GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
 	DROP DATABASE IF EXISTS test ;
+	DELETE FROM mysql.db ;
 	FLUSH PRIVILEGES ;
 EOSQL
     /usr/bin/cat > /root/.my.cnf <<EOF
@@ -93,4 +95,4 @@ if [[ ! -d $datadir/mysql ]]; then
     mysql_init
 fi
 
-exec /usr/sbin/mysqld --defaults-file=/etc/my.cnf --user=mysql
+exec $mysqld --defaults-file=/etc/my.cnf --user=mysql

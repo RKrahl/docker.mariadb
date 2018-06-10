@@ -1,4 +1,4 @@
-FROM rkrahl/opensuse
+FROM rkrahl/opensuse:42.3
 
 RUN zypper --non-interactive install \
 	mariadb

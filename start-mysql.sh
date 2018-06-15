@@ -11,11 +11,13 @@ die() {
 mysql_wait() {
     [[ -z "$1" ]] || socket="$1"
     echo "Waiting for MySQL to start"
-    for i in {1..60}; do
+    for i in {1..60}
+    do
 	mysqladmin --socket="$socket" ping > /dev/null 2>&1 && break
 	sleep 1
     done
-    if mysqladmin --socket="$socket" ping > /dev/null 2>&1; then
+    if mysqladmin --socket="$socket" ping > /dev/null 2>&1
+    then
 	echo "MySQL is alive"
 	return 0
     else
@@ -67,17 +69,19 @@ password = ${rootpw}
 EOF
     chmod 600 /root/.my.cnf
 
-    for f in /etc/mysql.d/*; do
-	case "$f" in 
-	    *.sql)   echo "running $f"
-	             mysql --socket=$protected/mysql.sock < $f ;;
-	    *)       echo "ignoring $f" ;;
-	esac
+    for f in /etc/mysql.d/*.sql
+    do
+	if [[ -f "$f" ]]
+	then
+	    echo "running $f"
+	    mysql --socket=$protected/mysql.sock < $f
+	fi
     done
 
     echo "Shuting down protected MySQL"
     kill "$(cat $protected/mysqld.pid)"
-    for i in {1..30}; do
+    for i in {1..30}
+    do
 	mysqladmin --socket="$protected/mysql.sock" ping > /dev/null 2>&1 || \
 	    break
     done
@@ -91,8 +95,18 @@ EOF
 mkdir -p /var/run/mysql
 chown --no-dereference mysql:mysql /var/run/mysql
 
-if [[ ! -d $datadir/mysql ]]; then
+if [[ ! -d $datadir/mysql ]]
+then
     mysql_init
 fi
 
-exec $mysqld --defaults-file=/etc/my.cnf --user=mysql
+$mysqld --defaults-file=/etc/my.cnf --user=mysql
+
+for f in /etc/mysql.d/*.sh
+do
+    if [[ -x "$f" ]]
+    then
+	echo "running $f"
+	$f
+    fi
+done

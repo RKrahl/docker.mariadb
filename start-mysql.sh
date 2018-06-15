@@ -12,10 +12,10 @@ mysql_wait() {
     [[ -z "$1" ]] || socket="$1"
     echo "Waiting for MySQL to start"
     for i in {1..60}; do
-	/usr/bin/mysqladmin --socket="$socket" ping > /dev/null 2>&1 && break
+	mysqladmin --socket="$socket" ping > /dev/null 2>&1 && break
 	sleep 1
     done
-    if /usr/bin/mysqladmin --socket="$socket" ping > /dev/null 2>&1; then
+    if mysqladmin --socket="$socket" ping > /dev/null 2>&1; then
 	echo "MySQL is alive"
 	return 0
     else
@@ -50,7 +50,7 @@ mysql_init() {
 	die "MySQL didn't start, can't continue"
 
     echo "Sanitize privileges"
-    /usr/bin/mysql --socket=$protected/mysql.sock <<EOSQL
+    mysql --socket=$protected/mysql.sock <<EOSQL
 	DELETE FROM mysql.user ;
 	FLUSH PRIVILEGES ;
 	CREATE USER 'root'@'localhost' IDENTIFIED BY '${rootpw}' ;
@@ -59,7 +59,7 @@ mysql_init() {
 	DELETE FROM mysql.db ;
 	FLUSH PRIVILEGES ;
 EOSQL
-    /usr/bin/cat > /root/.my.cnf <<EOF
+    cat > /root/.my.cnf <<EOF
 [client]
 host = localhost
 user = root
@@ -70,7 +70,7 @@ EOF
     for f in /etc/mysql.d/*; do
 	case "$f" in 
 	    *.sql)   echo "running $f"
-	             /usr/bin/mysql --socket=$protected/mysql.sock < $f ;;
+	             mysql --socket=$protected/mysql.sock < $f ;;
 	    *)       echo "ignoring $f" ;;
 	esac
     done
@@ -78,10 +78,10 @@ EOF
     echo "Shuting down protected MySQL"
     kill "$(cat $protected/mysqld.pid)"
     for i in {1..30}; do
-	/usr/bin/mysqladmin --socket="$protected/mysql.sock" ping > /dev/null 2>&1 || \
+	mysqladmin --socket="$protected/mysql.sock" ping > /dev/null 2>&1 || \
 	    break
     done
-    /usr/bin/mysqladmin --socket="$protected/mysql.sock" ping > /dev/null 2>&1 && \
+    mysqladmin --socket="$protected/mysql.sock" ping > /dev/null 2>&1 && \
 	kill -9 "$(cat $protected/mysqld.pid)"
 
     echo "Final cleanup"

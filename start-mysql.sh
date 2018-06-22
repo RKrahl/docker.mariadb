@@ -28,6 +28,7 @@ mysql_wait() {
 
 mysql_init() {
     rootpw="$(pwgen -s 32 1)"
+    cp /dev/null /root/.my.cnf
 
     echo "Creating MySQL privilege database... "
     mysql_install_db --user=mysql --datadir=$datadir || \

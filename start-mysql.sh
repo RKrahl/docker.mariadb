@@ -103,6 +103,9 @@ fi
 
 $mysqld --defaults-file=/etc/my.cnf --user=mysql &
 
+mysql_wait /var/run/mysql/mysql.sock || \
+    die "MySQL didn't start, can't continue"
+
 for f in /etc/mysql.d/*.sh
 do
     if [[ -x "$f" ]]

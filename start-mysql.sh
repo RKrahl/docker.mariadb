@@ -101,7 +101,7 @@ then
     mysql_init
 fi
 
-$mysqld --defaults-file=/etc/my.cnf --user=mysql
+$mysqld --defaults-file=/etc/my.cnf --user=mysql &
 
 for f in /etc/mysql.d/*.sh
 do

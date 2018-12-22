@@ -1,7 +1,8 @@
 FROM rkrahl/opensuse:15.0
 
 RUN zypper --non-interactive install \
-	mariadb
+	mariadb && \
+    sed -i -e 's/^\(bind-address .*\)/#\1/' /etc/my.cnf
 
 RUN mkdir -p /etc/mysql /etc/mysql.d
 COPY start-mysql.sh /etc/mysql

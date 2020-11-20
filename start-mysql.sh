@@ -93,9 +93,6 @@ EOF
     rm -rf $protected
 }
 
-mkdir -p /var/run/mysql
-chown --no-dereference mysql:mysql /var/run/mysql
-
 if [[ ! -d $datadir/mysql ]]
 then
     mysql_init

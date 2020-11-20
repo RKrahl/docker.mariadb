@@ -27,9 +27,6 @@ mysql_wait() {
 }
 
 mysql_init() {
-    rootpw="$(pwgen -s 32 1)"
-    cp /dev/null /root/.my.cnf
-
     echo "Creating MySQL privilege database... "
     mysql_install_db --user=mysql --datadir=$datadir || \
 	die "Creation of MySQL databse in $datadir failed"
@@ -54,21 +51,11 @@ mysql_init() {
 
     echo "Sanitize privileges"
     mysql --socket=$protected/mysql.sock <<EOSQL
-	DELETE FROM mysql.user ;
-	FLUSH PRIVILEGES ;
-	CREATE USER 'root'@'localhost' IDENTIFIED BY '${rootpw}' ;
-	GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
+	DELETE FROM mysql.user WHERE User='' ;
 	DROP DATABASE IF EXISTS test ;
 	DELETE FROM mysql.db ;
 	FLUSH PRIVILEGES ;
 EOSQL
-    cat > /root/.my.cnf <<EOF
-[client]
-host = localhost
-user = root
-password = ${rootpw}
-EOF
-    chmod 600 /root/.my.cnf
 
     for f in /etc/mysql.d/*.sql
     do

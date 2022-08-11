@@ -1,4 +1,4 @@
-FROM rkrahl/opensuse:15.3
+FROM rkrahl/opensuse:15.4
 
 COPY user-mysql.noarch.rpm /usr/src/packages/RPMS/noarch/
 

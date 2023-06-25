@@ -1,9 +1,12 @@
 FROM rkrahl/opensuse:15.4
 
+RUN zypper --non-interactive refresh
+
 COPY user-mysql.noarch.rpm /usr/src/packages/RPMS/noarch/
 
 RUN zypper --non-interactive addrepo /usr/src/packages/RPMS/ local && \
-    zypper --non-interactive modifyrepo --refresh --no-gpgcheck local && \
+    zypper --non-interactive modifyrepo --no-gpgcheck local && \
+    zypper --non-interactive refresh local && \
     zypper --non-interactive install \
         user-mysql.noarch && \
     zypper --non-interactive install \

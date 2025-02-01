@@ -4,11 +4,8 @@ RUN zypper --non-interactive refresh
 
 RUN zypper --non-interactive removelock python3-base
 
-COPY user-mysql.noarch.rpm /usr/src/packages/RPMS/noarch/
-
-RUN zypper --non-interactive addrepo /usr/src/packages/RPMS/ local && \
-    zypper --non-interactive modifyrepo --no-gpgcheck local && \
-    zypper --non-interactive refresh local && \
+RUN zypper --non-interactive addrepo https://download.opensuse.org/repositories/home:/Rotkraut:/HZB-RDM/15.5/home:Rotkraut:HZB-RDM.repo && \
+    zypper --non-interactive --gpg-auto-import-keys refresh home_Rotkraut_HZB-RDM && \
     zypper --non-interactive install \
         user-mysql.noarch && \
     zypper --non-interactive install \
